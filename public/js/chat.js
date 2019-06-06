@@ -15,11 +15,11 @@ const sidebarTemplate = document.querySelector('#sidebar-template').innerHTML
 // Options
 const { username, room } = Qs.parse(location.search, { ignoreQueryPrefix: true })
 
-const autoScroll = () => {
+const autoscroll = () => {
     // New message element
     const $newMessage = $messages.lastElementChild
 
-    // Height of new message
+    // Height of the new message
     const newMessageStyles = getComputedStyle($newMessage)
     const newMessageMargin = parseInt(newMessageStyles.marginBottom)
     const newMessageHeight = $newMessage.offsetHeight + newMessageMargin
@@ -28,16 +28,14 @@ const autoScroll = () => {
     const visibleHeight = $messages.offsetHeight
 
     // Height of messages container
-    const contentHeight = $messages.scrollHeight
+    const containerHeight = $messages.scrollHeight
 
-    // How far have I scrolled
+    // How far have I scrolled?
     const scrollOffset = $messages.scrollTop + visibleHeight
 
-    if(contentHeight - newMessageHeight <= scrollOffset) {
+    if (containerHeight - newMessageHeight <= scrollOffset) {
         $messages.scrollTop = $messages.scrollHeight
     }
-
-    console.log(newMessageStyles)
 }
 
 socket.on('message', (message) => {
@@ -45,10 +43,10 @@ socket.on('message', (message) => {
     const html = Mustache.render(messageTemplate, {
         username: message.username,
         message: message.text,
-        createdAt: moment(message.createdAt).format('H:mm a')
+        createdAt: moment(message.createdAt).format('h:mm a')
     })
     $messages.insertAdjacentHTML('beforeend', html)
-    autoScroll()
+    autoscroll()
 })
 
 socket.on('locationMessage', (message) => {
@@ -56,15 +54,15 @@ socket.on('locationMessage', (message) => {
     const html = Mustache.render(locationMessageTemplate, {
         username: message.username,
         url: message.url,
-        createdAt: moment(message.createdAt).format('H:mm:ss a')
+        createdAt: moment(message.createdAt).format('h:mm a')
     })
     $messages.insertAdjacentHTML('beforeend', html)
-    autoScroll()
+    autoscroll()
 })
 
 socket.on('roomData', ({ room, users }) => {
     const html = Mustache.render(sidebarTemplate, {
-        room, 
+        room,
         users
     })
     document.querySelector('#sidebar').innerHTML = html
@@ -103,7 +101,7 @@ $sendLocationButton.addEventListener('click', () => {
             longitude: position.coords.longitude
         }, () => {
             $sendLocationButton.removeAttribute('disabled')
-            console.log('Location shared!')
+            console.log('Location shared!')  
         })
     })
 })
